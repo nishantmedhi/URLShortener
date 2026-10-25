@@ -1,0 +1,50 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: url-shortener
+resources:
+  - ../../base
+images:
+  - name: urlshortener
+    newName: registry.example.com/platform/urlshortener
+    newTag: replace-with-immutable-image-digest
+patches:
+  - target:
+      version: v1
+      kind: ConfigMap
+      name: url-shortener-config
+    patch: |-
+      - op: replace
+        path: /data/REDIS_URL
+        value: redis://replace-with-managed-redis-endpoint:6379/0
+      - op: replace
+        path: /data/KAFKA_BOOTSTRAP_SERVERS
+        value: replace-with-managed-kafka-bootstrap
+  - target:
+      version: v1
+      kind: Namespace
+      name: url-shortener
+    patch: |-
+      - op: replace
+        path: /metadata/labels/pod-security.kubernetes.io~1enforce
+        value: restricted
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: url-shortener
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: replace-with-production-hostname
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: replace-with-production-hostname
+  - target:
+      group: argoproj.io
+      version: v1alpha1
+      kind: AnalysisTemplate
+      name: url-shortener-health
+    patch: |-
+      - op: replace
+        path: /spec/args/0/value
+        value: https://replace-with-managed-prometheus

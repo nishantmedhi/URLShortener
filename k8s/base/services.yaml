@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: url-shortener-active
+spec:
+  selector:
+    app.kubernetes.io/name: url-shortener
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: url-shortener-preview
+spec:
+  selector:
+    app.kubernetes.io/name: url-shortener
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: url-shortener
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: url-shortener

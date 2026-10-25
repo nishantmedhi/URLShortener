@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: url-shortener-health
+spec:
+  args:
+    - name: prometheus-address
+      value: http://prometheus.url-shortener.svc.cluster.local:9090
+  metrics:
+    - name: redirect-error-rate
+      interval: 30s
+      count: 2
+      failureLimit: 1
+      successCondition: len(result) == 0 || result[0] < 0.01
+      failureCondition: len(result) > 0 && result[0] >= 0.01
+      provider:
+        prometheus:
+          address: "{{args.prometheus-address}}"
+          query: sum(rate(urlshortener_redirects_total{outcome=~"not_found|expired|analytics_unavailable"}[2m])) / clamp_min(sum(rate(urlshortener_redirects_total[2m])), 1)

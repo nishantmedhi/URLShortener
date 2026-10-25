@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: url-shortener
+    metrics_path: /metrics
+    dns_sd_configs:
+      - names: ["api"]
+        type: A
+        port: 8000
+        refresh_interval: 15s
+  - job_name: analytics-worker
+    static_configs:
+      - targets: ["analytics-worker:8001"]

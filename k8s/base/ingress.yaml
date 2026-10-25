@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: url-shortener
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "5"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "5"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - shortener.local
+      secretName: url-shortener-tls
+  rules:
+    - host: shortener.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: url-shortener-active
+                port:
+                  number: 80

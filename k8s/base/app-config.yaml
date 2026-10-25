@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: url-shortener-config
+data:
+  REDIS_URL: redis://redis:6379/0
+  KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+  DATABASE_POOL_MIN_SIZE: "1"
+  DATABASE_POOL_MAX_SIZE: "4"
+  CACHE_TTL_SECONDS: "3600"
+  EVENT_PUBLISH_TIMEOUT_SECONDS: "1.0"

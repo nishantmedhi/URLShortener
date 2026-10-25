@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-worker
+spec:
+  template:
+    spec:
+      nodeSelector:
+        dedicated: url-shortener
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: url-shortener
+          effect: NoSchedule

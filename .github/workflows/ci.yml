@@ -1,0 +1,29 @@
+name: URL shortener CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests-and-manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: "v1.32.0"
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+      - name: Render Kubernetes overlays
+        shell: pwsh
+        run: ./scripts/validate-k8s.ps1
+      - name: Build application image
+        run: docker build --tag urlshortener:ci .

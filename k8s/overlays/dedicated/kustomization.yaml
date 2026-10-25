@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: url-shortener
+resources:
+  - ../local
+patches:
+  - path: rollout-node-placement.yaml
+  - path: worker-node-placement.yaml

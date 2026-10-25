@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: url-shortener
+resources:
+  - ../local
+patches:
+  - target:
+      group: argoproj.io
+      version: v1alpha1
+      kind: Rollout
+      name: url-shortener
+    patch: |-
+      - op: replace
+        path: /spec/strategy
+        value:
+          canary:
+            stableService: url-shortener-active
+            canaryService: url-shortener-preview
+            maxSurge: 1
+            maxUnavailable: 0
+            steps:
+              - setWeight: 20
+              - pause:
+                  duration: 30s
+              - analysis:
+                  templates:
+                    - templateName: url-shortener-health
+              - setWeight: 50
+              - pause: {}
+              - setWeight: 100

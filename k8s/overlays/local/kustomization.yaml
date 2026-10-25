@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: url-shortener
+resources:
+  - ../../base
+  - ../../local-dependencies
+secretGenerator:
+  - name: url-shortener-secrets
+    literals:
+      - POSTGRES_USER=shortener
+      - POSTGRES_PASSWORD=dev-only-change-me
+      - DATABASE_URL=postgresql://shortener:dev-only-change-me@postgres:5432/shortener
+    options:
+      disableNameSuffixHash: true
+images:
+  - name: urlshortener
+    newName: urlshortener
+    newTag: local
